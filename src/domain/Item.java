@@ -4,24 +4,20 @@ import domain.exceptions.FileExistException;
 import domain.exceptions.InvalidException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Item {
     private File file;
     private String name;
     private Stack<String> undos = new Stack();
     private Stack<String> redos = new Stack();
+    private boolean hasChanges = false;
     
     public Item(File file) {
         this.file = file;
@@ -36,6 +32,8 @@ public class Item {
         undos.push(name);
         for(Rule rule : rules)
             name = rule.applyRule(name);
+        
+        hasChanges = true;
     }
     
     public void undo() {
@@ -43,6 +41,8 @@ public class Item {
             redos.push(name);
             name = undos.pop();
         }
+        
+        hasChanges = true;
     }
     
     public void redo() {
@@ -50,6 +50,8 @@ public class Item {
             undos.push(name);
             name = redos.pop();
         }    
+        
+        hasChanges = true;
     }
     
     public void clearUndos() {
@@ -60,7 +62,14 @@ public class Item {
         redos.clear();
     }
     
+    public boolean hasChanges() {
+        return hasChanges;
+    }
+    
     public void save(String path) throws FileExistException {                
+        if(!hasChanges())
+            return;
+        
         File copy = new File(path + "\\" + name);
         if(copy.exists())
             throw new FileExistException(copy);
@@ -77,6 +86,7 @@ public class Item {
                         
             reader.close();
             writer.close();
+            hasChanges = false;
         } catch (IOException ex) {
             System.out.println(ex);
         }        

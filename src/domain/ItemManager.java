@@ -1,5 +1,6 @@
 package domain;
 
+import domain.exceptions.FileExistException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -14,11 +15,7 @@ public class ItemManager {
         items.addAll(toListItems(files));     
         notifyListeners();
     }
-    
-    public void renameItem(String originalName, String name) {
-
-    }
-    
+        
     public Set<Item> getItems() {
         return items;
     }
@@ -49,5 +46,18 @@ public class ItemManager {
     public void notifyListeners() {
         for(IIMListener listener : listeners) 
             listener.itemChanged();
+    }
+    
+    public boolean hasChanges() {
+        for(Item item : items)
+            if(item.hasChanges())
+                return true;
+        
+        return false;
+    }
+    
+    public void save(String path) throws FileExistException {
+        for(Item item : items)
+            item.save(path);
     }
 }
