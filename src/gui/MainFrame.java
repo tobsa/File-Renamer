@@ -31,12 +31,14 @@ public class MainFrame extends JFrame implements IIMListener {
     public MainFrame() {
         initComponents();
         
+        listFiles.setCellRenderer(new ListItemCellRenderer());
+        
         setTitle("FileRenamer");
         setLocationRelativeTo(null);
         try {            
             Rule rule1 = new RuleSubstringIndexOf("FindUnderscore", "_", true);
-            Rule rule2 = new RuleRegex("ReplaceUnderscore", "_", ".");
-            Rule rule3 = new RuleRegex("SeperateNames", ".-.", "?-?");
+            Rule rule2 = new RuleRegex("ReplaceUnderscore", "_", " ");
+            Rule rule3 = new RuleRegex("SeperateNames", "\\.-\\.", "?-?");
             Rule rule4 = new RuleSubstringIndex("Sub1", 1);
             
             ruleManager.addRule(rule1);
@@ -45,10 +47,10 @@ public class MainFrame extends JFrame implements IIMListener {
             ruleManager.addRule(rule4);
             
             List<Rule> ru = new ArrayList();
-//            ru.add(rule1);
-//            ru.add(rule2);
-//            ru.add(rule3);
-            ru.add(rule4);
+            ru.add(rule1);
+            ru.add(rule2);
+            ru.add(rule3);
+//            ru.add(rule4);
             
             ruleManager.activateRules(ru);
         } catch (RuleExistException ex) {
@@ -70,6 +72,7 @@ public class MainFrame extends JFrame implements IIMListener {
         
         buttonUndo.setEnabled(editHistory.hasUndos());
         buttonRedo.setEnabled(editHistory.hasRedos());
+        buttonSave.setEnabled(itemManager.hasChanges());
     }
 
     @SuppressWarnings("unchecked")
@@ -199,6 +202,7 @@ public class MainFrame extends JFrame implements IIMListener {
             }
         });
 
+        textfieldFilepath.setText("C:\\Users\\Tobias\\Desktop\\Epic Music Test\\Saved");
         textfieldFilepath.setEnabled(false);
         textfieldFilepath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,9 +254,9 @@ public class MainFrame extends JFrame implements IIMListener {
                 .addGroup(panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCommandsLayout.createSequentialGroup()
                         .addComponent(buttonChooseFilepath)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 354, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(textfieldFilepath))
+                    .addComponent(textfieldFilepath, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelCommandsLayout.setVerticalGroup(
@@ -320,8 +324,7 @@ public class MainFrame extends JFrame implements IIMListener {
     private void onListFilesValueChangedEvent(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_onListFilesValueChangedEvent
         buttonRename.setEnabled(!listFiles.isSelectionEmpty());
         buttonRemove.setEnabled(!listFiles.isSelectionEmpty());
-        buttonEdit.setEnabled(!listFiles.isSelectionEmpty()); 
-        buttonSave.setEnabled(!listFiles.isSelectionEmpty());
+        buttonEdit.setEnabled(!listFiles.isSelectionEmpty());
     }//GEN-LAST:event_onListFilesValueChangedEvent
 
     private void buttonRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRemoveActionPerformed
@@ -386,16 +389,13 @@ public class MainFrame extends JFrame implements IIMListener {
     }//GEN-LAST:event_buttonRedoActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        List<Item> selectedItems = listFiles.getSelectedValuesList();
-        if(selectedItems.isEmpty())
-            return;
-        
         try {
-            for(Item item : selectedItems)
-                item.save(textfieldFilepath.getText());
+            itemManager.save(textfieldFilepath.getText());
         } catch(FileExistException ex) {
             JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
+        itemChanged();
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonChooseFilepathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseFilepathActionPerformed

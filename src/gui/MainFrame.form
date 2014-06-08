@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -195,10 +195,10 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="buttonChooseFilepath" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="354" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="buttonSave" min="-2" pref="81" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="textfieldFilepath" max="32767" attributes="0"/>
+                      <Component id="textfieldFilepath" pref="554" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -265,6 +265,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="textfieldFilepath">
           <Properties>
+            <Property name="text" type="java.lang.String" value="C:\u005cUsers\u005cTobias\u005cDesktop\u005cEpic Music Test\u005cSaved" containsInvalidXMLChars="true"/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>

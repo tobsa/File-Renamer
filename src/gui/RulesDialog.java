@@ -30,8 +30,8 @@ public class RulesDialog extends JDialog implements IRMListener {
                 
         this.ruleManager = ruleManager;
                 
-        listAvailableRules.setCellRenderer(new RuleListRenderer());
-        listActiveRules.setCellRenderer(new RuleListRenderer());
+        listAvailableRules.setCellRenderer(new ListRuleCellRenderer());
+        listActiveRules.setCellRenderer(new ListRuleCellRenderer());
         
         updateList(listAvailableRules, ruleManager.getAvailableRules());
         updateList(listActiveRules, ruleManager.getActiveRules());
