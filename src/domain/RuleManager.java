@@ -1,10 +1,11 @@
 package domain;
 
 import domain.exceptions.RuleExistException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RuleManager {
+public class RuleManager implements Serializable {
     private List<Rule> availableRules = new ArrayList();
     private List<Rule> activeRules    = new ArrayList();
     private List<IRMListener> listeners = new ArrayList();
@@ -19,6 +20,11 @@ public class RuleManager {
             
         availableRules.add(rule);
         notifyListeners();
+    }
+    
+    public void addRules(List<Rule> rules) throws RuleExistException {
+        for(Rule rule : rules)
+            addRule(rule);
     }
     
     public void activateRules(List<Rule> rules) {

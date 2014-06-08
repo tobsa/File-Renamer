@@ -1,16 +1,14 @@
 package domain;
 
 import domain.exceptions.InvalidException;
-import static domain.rules.RuleSubstringIndexOf.TYPE;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
-public abstract class Rule {
+public abstract class Rule implements Serializable {
     private String name;
     private LinkedHashMap<String, String> attributes = new LinkedHashMap();
-    
-    public static boolean IgnoreError = false;
-    
+        
     public Rule(String name, String type) {
         this.name = name;
         setAttribute("Type", type);

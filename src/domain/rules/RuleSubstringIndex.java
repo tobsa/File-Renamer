@@ -4,8 +4,9 @@ import domain.Rule;
 import domain.exceptions.InvalidSubstringException;
 import domain.exceptions.InvalidException;
 import domain.exceptions.InvalidIndexException;
+import java.io.Serializable;
 
-public class RuleSubstringIndex extends Rule {
+public class RuleSubstringIndex extends Rule implements Serializable {
     public static final String TYPE = "SubstringIndex";
     
     private int index;

@@ -3,17 +3,16 @@ package gui;
 import domain.EditHistory;
 import domain.EditSession;
 import domain.IIMListener;
-import domain.Rule;
 import domain.Item;
 import domain.ItemManager;
+import domain.Rule;
 import domain.exceptions.InvalidException;
-import domain.exceptions.RuleExistException;
 import domain.RuleManager;
 import domain.exceptions.FileExistException;
-import domain.rules.RuleRegex;
-import domain.rules.RuleSubstringIndex;
-import domain.rules.RuleSubstringIndexOf;
+import domain.exceptions.RuleExistException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,6 +21,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import technical.FileManager;
 
 public class MainFrame extends JFrame implements IIMListener {
     private ItemManager itemManager = new ItemManager();
@@ -36,25 +36,18 @@ public class MainFrame extends JFrame implements IIMListener {
         setTitle("FileRenamer");
         setLocationRelativeTo(null);
         try {            
-            Rule rule1 = new RuleSubstringIndexOf("FindUnderscore", "_", true);
-            Rule rule2 = new RuleRegex("ReplaceUnderscore", "_", " ");
-            Rule rule3 = new RuleRegex("SeperateNames", "\\.-\\.", "?-?");
-            Rule rule4 = new RuleSubstringIndex("Sub1", 1);
+            if(FileManager.fileExist("avrules.dat")) {
+                ruleManager.addRules((List<Rule>)FileManager.load("avrules.dat"));
+            }   
             
-            ruleManager.addRule(rule1);
-            ruleManager.addRule(rule2);
-            ruleManager.addRule(rule3);
-            ruleManager.addRule(rule4);
+            if(FileManager.fileExist("acrules.dat")) {
+                ruleManager.activateRules((List<Rule>)FileManager.load("acrules.dat"));
+            } 
             
-            List<Rule> ru = new ArrayList();
-            ru.add(rule1);
-            ru.add(rule2);
-            ru.add(rule3);
-//            ru.add(rule4);
-            
-            ruleManager.activateRules(ru);
-        } catch (RuleExistException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException | ClassNotFoundException | RuleExistException ex) {
+            JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
                
         itemManager.registerListener(this);
@@ -145,6 +138,11 @@ public class MainFrame extends JFrame implements IIMListener {
         panelFiles.setBorder(javax.swing.BorderFactory.createTitledBorder("Selected files"));
 
         listFiles.setToolTipText("");
+        listFiles.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listFilesMouseClicked(evt);
+            }
+        });
         listFiles.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 onListFilesValueChangedEvent(evt);
@@ -249,7 +247,9 @@ public class MainFrame extends JFrame implements IIMListener {
                         .addComponent(buttonUndo, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                         .addComponent(buttonRemove))
-                    .addComponent(buttonRedo, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelCommandsLayout.createSequentialGroup()
+                        .addComponent(buttonRedo, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCommandsLayout.createSequentialGroup()
@@ -262,18 +262,17 @@ public class MainFrame extends JFrame implements IIMListener {
         panelCommandsLayout.setVerticalGroup(
             panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCommandsLayout.createSequentialGroup()
-                .addGroup(panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(buttonRename, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(buttonRemove)
-                        .addComponent(buttonSave)
-                        .addComponent(buttonChooseFilepath)
-                        .addComponent(buttonUndo)))
+                .addGroup(panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonRemove)
+                    .addComponent(buttonSave)
+                    .addComponent(buttonChooseFilepath)
+                    .addComponent(buttonUndo)
+                    .addComponent(buttonEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelCommandsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textfieldFilepath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonRedo)
-                    .addComponent(buttonEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonRename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -371,7 +370,8 @@ public class MainFrame extends JFrame implements IIMListener {
         if(selectedItems.isEmpty())
             return;
         
-        new ItemEditDialog(this, selectedItems);
+        new ItemEditDialog(this, selectedItems, editHistory);
+        itemChanged();
     }//GEN-LAST:event_buttonEditActionPerformed
 
     private void buttonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
@@ -406,6 +406,17 @@ public class MainFrame extends JFrame implements IIMListener {
         if(fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
             textfieldFilepath.setText(fc.getSelectedFile().getPath());
     }//GEN-LAST:event_buttonChooseFilepathActionPerformed
+
+    private void listFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFilesMouseClicked
+        if(evt.getClickCount() == 2) {
+            List<Item> items = new ArrayList();
+            Item item = listFiles.getSelectedValue();
+            items.add(item);
+            
+            new ItemEditDialog(this, items, editHistory);
+            itemChanged();
+        }
+    }//GEN-LAST:event_listFilesMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonChooseFilepath;

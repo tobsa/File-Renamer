@@ -15,6 +15,7 @@ import java.util.Stack;
 public class Item {
     private File file;
     private String name;
+    private String editName;
     private Stack<String> undos = new Stack();
     private Stack<String> redos = new Stack();
     private boolean hasChanges = false;
@@ -22,10 +23,34 @@ public class Item {
     public Item(File file) {
         this.file = file;
         this.name = file.getName();
+        this.editName = file.getName();
+    }
+    
+    public Item(String name) {
+        this.name = name;
+        this.editName = name;
     }
                 
     public String getName() {
         return name;
+    }
+    
+    public void setEditName(String editName) {
+        this.editName = editName;
+    }
+    
+    public String getEditName() {
+        return editName;
+    }
+    
+    public void commitEdit() {
+        if(name.equals(editName))
+            return;
+        
+        undos.push(name);
+        name = editName;
+
+        hasChanges = true;
     }
         
     public void applyRules(List<Rule> rules) throws InvalidException {        
@@ -40,18 +65,16 @@ public class Item {
         if(!undos.empty()) {
             redos.push(name);
             name = undos.pop();
+            hasChanges = true;
         }
-        
-        hasChanges = true;
     }
     
     public void redo() {
         if(!redos.empty()) {
             undos.push(name);
             name = redos.pop();
-        }    
-        
-        hasChanges = true;
+            hasChanges = true;
+        } 
     }
     
     public void clearUndos() {
@@ -63,6 +86,9 @@ public class Item {
     }
     
     public boolean hasChanges() {
+        if(name.equals(file.getName()))
+            return false;
+        
         return hasChanges;
     }
     

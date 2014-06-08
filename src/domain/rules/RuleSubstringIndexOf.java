@@ -2,8 +2,9 @@ package domain.rules;
 
 import domain.Rule;
 import domain.exceptions.InvalidException;
+import java.io.Serializable;
 
-public class RuleSubstringIndexOf extends Rule {
+public class RuleSubstringIndexOf extends Rule implements Serializable {
     public static final String TYPE = "SubstringIndexOf";
     
     private String index;

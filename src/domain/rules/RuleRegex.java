@@ -1,8 +1,9 @@
 package domain.rules;
 
 import domain.Rule;
+import java.io.Serializable;
 
-public class RuleRegex extends Rule {
+public class RuleRegex extends Rule implements Serializable {
     public static final String TYPE = "Regex";
     
     private String regex;
