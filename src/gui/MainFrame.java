@@ -8,15 +8,13 @@ import domain.ItemManager;
 import domain.Rule;
 import domain.exceptions.InvalidException;
 import domain.RuleManager;
-import domain.exceptions.FileExistException;
 import domain.exceptions.RuleExistException;
+import gui.ruledialogs.DisplaySaveDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,6 +22,11 @@ import javax.swing.JOptionPane;
 import technical.FileManager;
 
 public class MainFrame extends JFrame implements IIMListener {
+    private static final String FILE_DIRECTORY = "fdir.dat";
+    private static final String SAVE_DIRECTORY = "sdir.dat";
+    private static final String ACTIVE_RULES = "acrules.dat";
+    private static final String AVAILABLE_RULES = "avrules.dat";
+    
     private ItemManager itemManager = new ItemManager();
     private RuleManager ruleManager = new RuleManager();
     private EditHistory editHistory = new EditHistory();
@@ -31,25 +34,29 @@ public class MainFrame extends JFrame implements IIMListener {
     public MainFrame() {
         initComponents();
         
-        listFiles.setCellRenderer(new ListItemCellRenderer());
+        listFiles.setCellRenderer(new ListItemCellRenderer(ListItemCellRenderer.ITEM_NORMAL));
         
         setTitle("FileRenamer");
         setLocationRelativeTo(null);
         try {            
-            if(FileManager.fileExist("avrules.dat")) {
-                ruleManager.addRules((List<Rule>)FileManager.load("avrules.dat"));
-            }   
+            if(FileManager.fileExist(AVAILABLE_RULES))
+                ruleManager.addRules((List<Rule>)FileManager.load(AVAILABLE_RULES));
             
-            if(FileManager.fileExist("acrules.dat")) {
-                ruleManager.activateRules((List<Rule>)FileManager.load("acrules.dat"));
-            } 
+            if(FileManager.fileExist(ACTIVE_RULES))
+                ruleManager.activateRules((List<Rule>)FileManager.load(ACTIVE_RULES));
+            
+            if(FileManager.fileExist(SAVE_DIRECTORY)) {
+                String filename = (String)FileManager.load(SAVE_DIRECTORY);
+                if(FileManager.isDirectory(filename))
+                    textfieldFilepath.setText(filename);
+            }
             
         } catch (FileNotFoundException | ClassNotFoundException | RuleExistException ex) {
             JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-               
+        
         itemManager.registerListener(this);
     }
     
@@ -200,7 +207,6 @@ public class MainFrame extends JFrame implements IIMListener {
             }
         });
 
-        textfieldFilepath.setText("C:\\Users\\Tobias\\Desktop\\Epic Music Test\\Saved");
         textfieldFilepath.setEnabled(false);
         textfieldFilepath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -310,13 +316,29 @@ public class MainFrame extends JFrame implements IIMListener {
     private void buttonChooseFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseFilesActionPerformed
         final JFileChooser fc = new JFileChooser();
         fc.setMultiSelectionEnabled(true);
-        fc.setCurrentDirectory(new File("C:\\Users\\Tobias\\Desktop\\Epic Music Test"));
+        
+        if(FileManager.fileExist(FILE_DIRECTORY)) {
+            try {
+                String filename = (String)FileManager.load(FILE_DIRECTORY);
+                if(FileManager.isDirectory(filename))
+                    fc.setCurrentDirectory(new File(filename));
+            } catch (ClassNotFoundException | IOException ex) {
+                JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
         if(fc.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
             itemManager.addItems(fc.getSelectedFiles()); 
             
-            if(textfieldFilepath.getText().isEmpty())
-                textfieldFilepath.setText(fc.getCurrentDirectory().getPath());
+            try {
+                FileManager.save(FILE_DIRECTORY, fc.getCurrentDirectory().getPath());
+                if(textfieldFilepath.getText().isEmpty()) {
+                    textfieldFilepath.setText(fc.getCurrentDirectory().getPath());
+                    FileManager.save(SAVE_DIRECTORY, fc.getCurrentDirectory().getPath());
+                }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_buttonChooseFilesActionPerformed
 
@@ -333,6 +355,7 @@ public class MainFrame extends JFrame implements IIMListener {
         
         editHistory.removeItems(selectedItems);
         itemManager.removeItems(selectedItems);
+        listFiles.clearSelection();
     }//GEN-LAST:event_buttonRemoveActionPerformed
 
     private void buttonRenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRenameActionPerformed
@@ -389,22 +412,24 @@ public class MainFrame extends JFrame implements IIMListener {
     }//GEN-LAST:event_buttonRedoActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        try {
-            itemManager.save(textfieldFilepath.getText());
-        } catch(FileExistException ex) {
-            JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        new DisplaySaveDialog(this, itemManager, textfieldFilepath.getText());
         
         itemChanged();
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonChooseFilepathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseFilepathActionPerformed
         JFileChooser fc = new JFileChooser();
-        fc.setCurrentDirectory(new File("C:\\Users\\Tobias\\Desktop\\Epic Music Test"));
+        fc.setCurrentDirectory(new File(textfieldFilepath.getText()));
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         
-        if(fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+        if(fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             textfieldFilepath.setText(fc.getSelectedFile().getPath());
+            try {
+                FileManager.save(SAVE_DIRECTORY, fc.getSelectedFile().getPath());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_buttonChooseFilepathActionPerformed
 
     private void listFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFilesMouseClicked

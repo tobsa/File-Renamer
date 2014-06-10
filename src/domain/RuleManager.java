@@ -33,6 +33,12 @@ public class RuleManager implements Serializable {
         notifyListeners();
     }
     
+    public void activateRule(Rule rule) {
+        availableRules.remove(rule);
+        activeRules.add(rule);
+        notifyListeners();
+    }
+    
     public void activateAll() {
         activeRules.addAll(availableRules);
         availableRules.clear();
@@ -42,6 +48,12 @@ public class RuleManager implements Serializable {
     public void deactivateRules(List<Rule> rules) {
         activeRules.removeAll(rules);
         availableRules.addAll(rules);
+        notifyListeners();
+    }
+    
+    public void deactivateRule(Rule rule) {
+        activeRules.remove(rule);
+        availableRules.add(rule);
         notifyListeners();
     }
     

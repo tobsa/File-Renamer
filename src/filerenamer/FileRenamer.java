@@ -15,27 +15,12 @@ import technical.FileManager;
 public class FileRenamer {
 
     public static void main(String[] args) throws RuleExistException, FileNotFoundException, ClassNotFoundException {
-//        try {
-//            if(FileManager.fileExist("avrules.dat")) {
-//                RuleManager ruleManager = (RuleManager)FileManager.load("avrules.dat");
-//                
-//                for(Rule rule : ruleManager.getAvailableRules())
-//                    System.out.println(rule.getName());
-//                
-//                
-//            }
-//            else {
-//                RuleManager ruleManager = new RuleManager();
-//
-//                ruleManager.addRule(new RuleRegex("derp", "a", "b"));
-//
-//                FileManager.save("avrules.dat", ruleManager);
-//                System.out.println("Saved!");
-//            }
-//            
-//        } catch (IOException ex) {
-//            System.out.println(ex);
-//        }
+        
+//        String d = "hej på dig";
+//        String e = d.replaceAll("\\?", "_");
+//        
+//        System.out.println(e);
+        
         
         setLookAndFeel();
 

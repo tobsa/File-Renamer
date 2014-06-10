@@ -33,6 +33,16 @@ public class ItemManager {
         items.clear();
         notifyListeners();
     }
+    
+    public List<Item> getItemsWithChanges() {
+        List<Item> itemsList = new ArrayList();
+        
+        for(Item item : items)
+            if(item.hasChanges())
+                itemsList.add(item);
+        
+        return itemsList;
+    }
         
     private ArrayList<Item> toListItems(File[] files) {
         ArrayList<Item> list = new ArrayList();
@@ -56,8 +66,17 @@ public class ItemManager {
         return false;
     }
     
-    public void save(String path) throws FileExistException {
-        for(Item item : items)
-            item.save(path);
+    public List<String> save(String path){
+        List<String> messages = new ArrayList();
+        
+        for(Item item : items) {
+            try {
+                item.save(path);
+            } catch (FileExistException ex) {
+                messages.add(ex.getMessage());
+            }
+        }
+        
+        return messages;
     }
 }

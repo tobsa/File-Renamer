@@ -27,4 +27,8 @@ public class FileManager {
         return new File(filename).exists();
     }
     
+    public static boolean isDirectory(String filename) {
+        return new File(filename).isDirectory();
+    }
+    
 }

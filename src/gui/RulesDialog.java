@@ -89,12 +89,10 @@ public class RulesDialog extends JDialog implements IRMListener {
         buttonRemove = new javax.swing.JButton();
         buttonAvailableMoveUp = new javax.swing.JButton();
         buttonAvailableMoveDown = new javax.swing.JButton();
-        buttonActivateAll = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         listActiveRules = new javax.swing.JList<domain.Rule>();
         buttonDeactivate = new javax.swing.JButton();
-        buttonDeactiaveAll = new javax.swing.JButton();
         buttonActiveMoveUp = new javax.swing.JButton();
         buttonActiveMoveDown = new javax.swing.JButton();
         buttonClose = new javax.swing.JButton();
@@ -142,6 +140,11 @@ public class RulesDialog extends JDialog implements IRMListener {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Available Rules"));
 
+        listAvailableRules.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listAvailableRulesMouseClicked(evt);
+            }
+        });
         listAvailableRules.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 onListAvailableRulesValueChangedEvent(evt);
@@ -181,54 +184,51 @@ public class RulesDialog extends JDialog implements IRMListener {
             }
         });
 
-        buttonActivateAll.setText("Activate All");
-        buttonActivateAll.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonActivateAllActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonAvailableMoveUp, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonActivate)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonActivateAll))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonAvailableMoveDown)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(buttonAvailableMoveDown)
+                                .addGap(144, 144, 144))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(buttonAvailableMoveUp, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addComponent(buttonActivate, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
+                .addComponent(jScrollPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonAvailableMoveUp)
-                    .addComponent(buttonActivateAll)
-                    .addComponent(buttonActivate))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonAvailableMoveDown)
-                    .addComponent(buttonRemove))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(buttonAvailableMoveUp)
+                            .addComponent(buttonRemove))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonAvailableMoveDown))
+                    .addComponent(buttonActivate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Active Rules"));
 
+        listActiveRules.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listActiveRulesMouseClicked(evt);
+            }
+        });
         listActiveRules.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 onListActiveRulesValueChangedEvent(evt);
@@ -241,13 +241,6 @@ public class RulesDialog extends JDialog implements IRMListener {
         buttonDeactivate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonDeactivateActionPerformed(evt);
-            }
-        });
-
-        buttonDeactiaveAll.setText("Deactivate All");
-        buttonDeactiaveAll.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonDeactiaveAllActionPerformed(evt);
             }
         });
 
@@ -276,10 +269,8 @@ public class RulesDialog extends JDialog implements IRMListener {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(buttonDeactiaveAll)
+                        .addComponent(buttonDeactivate, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonDeactivate)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buttonActiveMoveUp, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(buttonActiveMoveDown, javax.swing.GroupLayout.Alignment.TRAILING))))
@@ -291,12 +282,12 @@ public class RulesDialog extends JDialog implements IRMListener {
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonDeactiaveAll)
-                    .addComponent(buttonActiveMoveUp)
-                    .addComponent(buttonDeactivate))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonActiveMoveDown)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(buttonActiveMoveUp)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonActiveMoveDown))
+                    .addComponent(buttonDeactivate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -439,16 +430,6 @@ public class RulesDialog extends JDialog implements IRMListener {
         saveRules();
     }//GEN-LAST:event_buttonRemoveActionPerformed
 
-    private void buttonDeactiaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeactiaveAllActionPerformed
-        ruleManager.deactivateAll();
-        saveRules();
-    }//GEN-LAST:event_buttonDeactiaveAllActionPerformed
-
-    private void buttonActivateAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActivateAllActionPerformed
-        ruleManager.activateAll();
-        saveRules();
-    }//GEN-LAST:event_buttonActivateAllActionPerformed
-
     private void buttonAvailableMoveUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAvailableMoveUpActionPerformed
         int index = listAvailableRules.getSelectedIndex();
         
@@ -489,16 +470,36 @@ public class RulesDialog extends JDialog implements IRMListener {
         }
     }//GEN-LAST:event_buttonActiveMoveDownActionPerformed
 
+    private void listAvailableRulesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listAvailableRulesMouseClicked
+        if(evt.getClickCount() == 2) {
+            Rule rule = listAvailableRules.getSelectedValue();
+            if(rule == null)
+                return;
+            
+            ruleManager.activateRule(rule);
+            saveRules();
+        }
+    }//GEN-LAST:event_listAvailableRulesMouseClicked
+
+    private void listActiveRulesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listActiveRulesMouseClicked
+        if(evt.getClickCount() == 2) {
+            Rule rule = listActiveRules.getSelectedValue();
+            if(rule == null)
+                return;
+            
+            ruleManager.deactivateRule(rule);
+            saveRules();
+        }
+    }//GEN-LAST:event_listActiveRulesMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonActivate;
-    private javax.swing.JButton buttonActivateAll;
     private javax.swing.JButton buttonActiveMoveDown;
     private javax.swing.JButton buttonActiveMoveUp;
     private javax.swing.JButton buttonAddRule;
     private javax.swing.JButton buttonAvailableMoveDown;
     private javax.swing.JButton buttonAvailableMoveUp;
     private javax.swing.JButton buttonClose;
-    private javax.swing.JButton buttonDeactiaveAll;
     private javax.swing.JButton buttonDeactivate;
     private javax.swing.JButton buttonRemove;
     private javax.swing.JComboBox<String> comboRuleTypes;

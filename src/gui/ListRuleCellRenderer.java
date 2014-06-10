@@ -21,8 +21,7 @@ public class ListRuleCellRenderer implements ListCellRenderer {
         for(String key : rule.getAttributes().keySet()) {
             JPanel panelCell = new JPanel(new GridLayout(0, 2));
             panelCell.add(new JLabel(key + ": "));
-            panelCell.add(new JLabel("|" + rule.getValue(key).replaceAll(" ", "?") + "|"));
-            //panelCell.setBorder(new EtchedBorder());
+            panelCell.add(new JLabel("|" + rule.getValue(key).replaceAll(" ", "[SPACE]") + "|"));
             
             if(isSelected)
                 panelCell.setBackground(new Color(51, 153, 255));

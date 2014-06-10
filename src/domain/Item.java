@@ -35,6 +35,10 @@ public class Item {
         return name;
     }
     
+    public String getOriginalName() {
+        return file.getName();
+    }
+    
     public void setEditName(String editName) {
         this.editName = editName;
     }

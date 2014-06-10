@@ -4,6 +4,7 @@ import domain.Rule;
 import domain.exceptions.InvalidException;
 import domain.rules.RuleRegex;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
 public class RegexDialog extends RuleDialog {
@@ -150,8 +151,8 @@ public class RegexDialog extends RuleDialog {
             String regex = textfieldRegex.getText();
             String replacement = textfieldReplacement.getText();
             
-            regex = regex.replaceAll(" ", "?");
-            replacement = replacement.replaceAll(" ", "?");
+//            regex = regex.replaceAll(" ", "?");
+//            replacement = replacement.replaceAll(" ", "?");
 
             rule = new RuleRegex(name, regex, replacement);
             dispose();

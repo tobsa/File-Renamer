@@ -267,7 +267,6 @@
         </Component>
         <Component class="javax.swing.JTextField" name="textfieldFilepath">
           <Properties>
-            <Property name="text" type="java.lang.String" value="C:\u005cUsers\u005cTobias\u005cDesktop\u005cEpic Music Test\u005cSaved" containsInvalidXMLChars="true"/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
