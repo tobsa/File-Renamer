@@ -2,6 +2,7 @@ package filerenamer;
 
 import domain.exceptions.RuleExistException;
 import gui.MainFrame;
+import java.awt.Toolkit;
 import java.io.FileNotFoundException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -15,7 +16,9 @@ public class FileRenamer {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MainFrame().setVisible(true);
+                MainFrame frame = new MainFrame();
+                frame.setIconImage(Toolkit.getDefaultToolkit().getImage("icon.png"));
+                frame.setVisible(true);
             }
         });
     }
