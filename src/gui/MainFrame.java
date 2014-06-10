@@ -9,11 +9,9 @@ import domain.Rule;
 import domain.exceptions.InvalidException;
 import domain.RuleManager;
 import domain.exceptions.RuleExistException;
-import gui.ruledialogs.DisplaySaveDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -56,7 +54,7 @@ public class MainFrame extends JFrame implements IIMListener {
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+                
         itemManager.registerListener(this);
     }
     
@@ -329,13 +327,14 @@ public class MainFrame extends JFrame implements IIMListener {
 
         if(fc.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
             itemManager.addItems(fc.getSelectedFiles()); 
+            itemManager.setPath(textfieldFilepath.getText());
             
             try {
                 FileManager.save(FILE_DIRECTORY, fc.getCurrentDirectory().getPath());
                 if(textfieldFilepath.getText().isEmpty()) {
                     textfieldFilepath.setText(fc.getCurrentDirectory().getPath());
                     FileManager.save(SAVE_DIRECTORY, fc.getCurrentDirectory().getPath());
-                }
+                 }
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(MainFrame.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -393,7 +392,11 @@ public class MainFrame extends JFrame implements IIMListener {
         if(selectedItems.isEmpty())
             return;
         
-        new ItemEditDialog(this, selectedItems, editHistory);
+        if(selectedItems.size() == 1)
+            new ItemSingleEditDialog(this, selectedItems.get(0), editHistory).setVisible(true);
+        else
+            new ItemMultipleEditDialog(this, selectedItems, editHistory).setVisible(true);
+        
         itemChanged();
     }//GEN-LAST:event_buttonEditActionPerformed
 
@@ -412,9 +415,10 @@ public class MainFrame extends JFrame implements IIMListener {
     }//GEN-LAST:event_buttonRedoActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        new DisplaySaveDialog(this, itemManager, textfieldFilepath.getText());
-        
+        new DisplaySaveDialog(this, itemManager, textfieldFilepath.getText()).setVisible(true);
+                
         itemChanged();
+        listFiles.clearSelection();
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonChooseFilepathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseFilepathActionPerformed
@@ -424,6 +428,7 @@ public class MainFrame extends JFrame implements IIMListener {
         
         if(fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             textfieldFilepath.setText(fc.getSelectedFile().getPath());
+            itemManager.setPath(textfieldFilepath.getText());
             try {
                 FileManager.save(SAVE_DIRECTORY, fc.getSelectedFile().getPath());
             } catch (IOException ex) {
@@ -433,12 +438,8 @@ public class MainFrame extends JFrame implements IIMListener {
     }//GEN-LAST:event_buttonChooseFilepathActionPerformed
 
     private void listFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFilesMouseClicked
-        if(evt.getClickCount() == 2) {
-            List<Item> items = new ArrayList();
-            Item item = listFiles.getSelectedValue();
-            items.add(item);
-            
-            new ItemEditDialog(this, items, editHistory);
+        if(evt.getClickCount() == 2) {            
+            new ItemSingleEditDialog(this, listFiles.getSelectedValue(), editHistory).setVisible(true);
             itemChanged();
         }
     }//GEN-LAST:event_listFilesMouseClicked

@@ -4,32 +4,40 @@ import domain.EditHistory;
 import domain.EditSession;
 import domain.Item;
 import java.awt.Frame;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 
-public class ItemEditDialog extends JDialog {
+public class ItemMultipleEditDialog extends JDialog {
     private List<Item> items;
     private EditHistory editHistory;
+    private Map<String, String> itemNames = new LinkedHashMap();
     
-    public ItemEditDialog(Frame parent, List<Item> items, EditHistory editHistory) {
+    public ItemMultipleEditDialog(Frame parent, List<Item> items, EditHistory editHistory) {
         super(parent, true);
         initComponents();
                 
         this.items = items;
         this.editHistory = editHistory;
+        
+        for(Item item : items)
+            itemNames.put(item.getName(), item.getName());
                 
         updateList();
         
+        listItems.setSelectedIndex(0);
+        textfieldSelectedItem.setText(items.get(0).getName());
+        
         setLocationRelativeTo(parent);
         setTitle("Edit Item");
-        setVisible(true);
     }
     
     private void updateList() {
         DefaultListModel<String> model = new DefaultListModel();
-        for(Item item : items)
-            model.addElement(item.getEditName());
+        for(String name : itemNames.values())
+            model.addElement(name);
         listItems.setModel(model);
     }
 
@@ -163,26 +171,24 @@ public class ItemEditDialog extends JDialog {
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        for(Item item : items)
-            item.commitEdit();
+        EditSession session = new EditSession();
+        for(Item item : items) {
+            item.setName(itemNames.get(item.getName())); 
+            session.remember(item);
+        }
+        
+        editHistory.rembember(session);
         
         dispose();
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUpdateActionPerformed
-        String name = listItems.getSelectedValue();
-        if(name == null)
+        int index = listItems.getSelectedIndex();
+        if(index == -1)
             return;
         
-        EditSession session = new EditSession();
-        for(Item item : items) {
-            if(name.equals(item.getEditName())) {
-                item.setEditName(textfieldSelectedItem.getText());
-                session.remember(item);
-            }
-        }
+        itemNames.put(items.get(index).getName(), textfieldSelectedItem.getText());
         
-        editHistory.rembember(session);
         updateList();
     }//GEN-LAST:event_buttonUpdateActionPerformed
 

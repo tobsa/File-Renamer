@@ -1,11 +1,12 @@
 package gui;
 
 import domain.Item;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -25,7 +26,11 @@ public class ListItemCellRenderer implements ListCellRenderer {
     
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {  
-        return type == ITEM_NORMAL ? handleNormal(value, isSelected) : handleSave(value);
+        switch(type) {
+            case ITEM_NORMAL: return handleNormal(value, isSelected);
+        }
+        
+        return handleSave(value);
     }
     
     private JLabel handleNormal(Object value, boolean isSelected) {
@@ -41,16 +46,26 @@ public class ListItemCellRenderer implements ListCellRenderer {
             label.setBackground(Color.ORANGE);
         }
         
-        label.setBorder(new EmptyBorder(1, 1, 1, 0));
+        label.setBorder(new EmptyBorder(2, 2, 2, 2));
         return label;
     }
     
     private JPanel handleSave(Object value) {
         Item item = (Item)value;
         
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel label = new JLabel(item.getName());
-        label.setBorder(new EmptyBorder(2, 20, 2, 0));
+        boolean exists = item.exists();
+        
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel(item.getName() + (exists ? " already exists!" : ""));
+        label.setBorder(new EmptyBorder(4, 5, 4, 5));
+        label.setOpaque(true);
+        
+        if(exists) {
+            label.setBackground(new Color(255,99,71));
+        }
+        else
+            label.setBackground(new Color(154,205,50));
+        
         panel.add(label);
         panel.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(0, 0, 0, 0), new TitledBorder(item.getOriginalName())));
         

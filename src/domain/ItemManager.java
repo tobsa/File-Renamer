@@ -2,6 +2,7 @@ package domain;
 
 import domain.exceptions.FileExistException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -66,17 +67,17 @@ public class ItemManager {
         return false;
     }
     
-    public List<String> save(String path){
-        List<String> messages = new ArrayList();
-        
+    public void setPath(String path) {
+        for(Item item : items)
+            item.setPath(path);
+    }
+    
+    public void save(String path) throws IOException{        
         for(Item item : items) {
             try {
-                item.save(path);
-            } catch (FileExistException ex) {
-                messages.add(ex.getMessage());
-            }
+                item.setPath(path);
+                item.save();
+            } catch (FileExistException ex) {}
         }
-        
-        return messages;
     }
 }

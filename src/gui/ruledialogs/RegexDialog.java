@@ -4,7 +4,6 @@ import domain.Rule;
 import domain.exceptions.InvalidException;
 import domain.rules.RuleRegex;
 import java.awt.Frame;
-import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
 public class RegexDialog extends RuleDialog {

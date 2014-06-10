@@ -1,13 +1,9 @@
-package gui.ruledialogs;
+package gui;
 
 import domain.Item;
 import domain.ItemManager;
-import domain.exceptions.FileExistException;
-import gui.DisplayMessagesDialog;
-import gui.ListItemCellRenderer;
-import gui.MainFrame;
 import java.awt.Frame;
-import java.util.List;
+import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -31,7 +27,6 @@ public class DisplaySaveDialog extends JDialog {
         
         setLocationRelativeTo(parent);
         setTitle("Save files...");
-        setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -49,7 +44,6 @@ public class DisplaySaveDialog extends JDialog {
         panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Save files..."));
 
         listItems.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        listItems.setEnabled(false);
         jScrollPane2.setViewportView(listItems);
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
@@ -93,9 +87,9 @@ public class DisplaySaveDialog extends JDialog {
                     .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(buttonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(buttonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(buttonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -114,12 +108,13 @@ public class DisplaySaveDialog extends JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOKActionPerformed
+        try {        
+            itemManager.save(savePath);
+            dispose();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(DisplaySaveDialog.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
         
-        List<String> messages = itemManager.save(savePath);
-        if(!messages.isEmpty())
-            new DisplayMessagesDialog(DisplaySaveDialog.this, messages);
-        
-        dispose();
     }//GEN-LAST:event_buttonOKActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed

@@ -15,7 +15,7 @@ import java.util.Stack;
 public class Item {
     private File file;
     private String name;
-    private String editName;
+    private String path;    
     private Stack<String> undos = new Stack();
     private Stack<String> redos = new Stack();
     private boolean hasChanges = false;
@@ -23,40 +23,27 @@ public class Item {
     public Item(File file) {
         this.file = file;
         this.name = file.getName();
-        this.editName = file.getName();
     }
     
     public Item(String name) {
         this.name = name;
-        this.editName = name;
     }
                 
     public String getName() {
         return name;
     }
     
+    public void setName(String name) {
+        undos.push(this.name);
+        this.name = name;
+        
+        hasChanges = true;
+    }
+    
     public String getOriginalName() {
         return file.getName();
     }
-    
-    public void setEditName(String editName) {
-        this.editName = editName;
-    }
-    
-    public String getEditName() {
-        return editName;
-    }
-    
-    public void commitEdit() {
-        if(name.equals(editName))
-            return;
-        
-        undos.push(name);
-        name = editName;
-
-        hasChanges = true;
-    }
-        
+                
     public void applyRules(List<Rule> rules) throws InvalidException {        
         undos.push(name);
         for(Rule rule : rules)
@@ -96,7 +83,15 @@ public class Item {
         return hasChanges;
     }
     
-    public void save(String path) throws FileExistException {                
+    public boolean exists() {
+        return new File(path + "\\" + name).exists();
+    }
+    
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
+    public void save() throws FileExistException, IOException {                
         if(!hasChanges())
             return;
         
@@ -104,22 +99,18 @@ public class Item {
         if(copy.exists())
             throw new FileExistException(copy);
         
-        try {
-            InputStream  reader = new FileInputStream(file);
-            OutputStream writer = new FileOutputStream(copy);
-            
-            byte[] buffer = new byte[1024];
-            
-            int length;
-            while((length = reader.read(buffer)) > 0)
-                writer.write(buffer, 0, length);
-                        
-            reader.close();
-            writer.close();
-            hasChanges = false;
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }        
+        InputStream  reader = new FileInputStream(file);
+        OutputStream writer = new FileOutputStream(copy);
+
+        byte[] buffer = new byte[1024];
+
+        int length;
+        while((length = reader.read(buffer)) > 0)
+            writer.write(buffer, 0, length);
+
+        reader.close();
+        writer.close();
+        hasChanges = false; 
     }
     
    
